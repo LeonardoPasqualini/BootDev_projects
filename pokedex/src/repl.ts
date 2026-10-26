@@ -1,29 +1,28 @@
-import { createInterface } from "node:readline";
-import { commandExit } from "./commands/exit.js";
-import { commandHelp } from "./commands/help.js";
+// import { commandExit } from "./commands/exit.js";
+// import { commandHelp } from "./commands/help.js";
 import { CLICommand, State } from "./state.js";
 // npm run dev | tee repl.log
 
-export function getCommands(): Record<string, CLICommand> {
-  return {
-    exit: {
-      name: "exit",
-      description: "Exit the Pokedex",
-      callback: commandExit,
-    },
-    help: {
-      name: "help",
-      description: "Displays available commands",
-      callback: commandHelp,
-    },
-    // can add more commands here
-  };
-}
+// export function getCommands(): Record<string, CLICommand> {
+//   return {
+//     exit: {
+//       name: "exit",
+//       description: "Exit the Pokedex",
+//       callback: commandExit,
+//     },
+//     help: {
+//       name: "help",
+//       description: "Displays available commands",
+//       callback: commandHelp,
+//     },
+//     // can add more commands here
+//   };
+// }
 
 export function cleanInput(input: string): string[] {
   const splitArray = input.trim().split(" ");
   let cleanArr = [];
-  for(let word of splitArray) {
+  for (let word of splitArray) {
     if (!word.length) {
       continue;
     }
@@ -32,33 +31,37 @@ export function cleanInput(input: string): string[] {
   return cleanArr;
 }
 
-export function startREPL(state: State) {
+export async function startREPL(state: State) {
   const rl = state.rl
 
   rl.prompt()
-  rl.on("line", (line) => {
+  rl.on("line", async (line) => {
     const inputClean = cleanInput(line);
-
-    if(inputClean.length == 0){
+    const commands = state.commands;
+    // clean output
+    if (inputClean.length == 0) {
       rl.prompt()
       return;
     }
-    // console.log(`Your command was: ${inputClean[0]}`)
 
-    const commands = state.commands;
+    try {
+      // lookup the command
+      const command = commands[inputClean[0]];
 
-    switch(inputClean[0]) {
-      case "exit":
-        commandExit(state);
-      case "help":
-        commandHelp(state);
-        break;
-      default:
+      // if command doesn't exist log unknow command
+      // else call the command
+      if (!command) {
         console.log("Unknown command");
+      } else {
+        const call = commands[inputClean[0]].callback(state);
+        await call;
+      }
+    } catch (err) {
+      console.log("Unknown command");
     }
-    
+    // gives back the prompt to user
     rl.prompt();
-  })
+  });
 }
 
 export { CLICommand };
