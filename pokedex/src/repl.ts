@@ -1,7 +1,7 @@
 import { createInterface } from "node:readline";
 import { commandExit } from "./commands/exit.js";
 import { commandHelp } from "./commands/help.js";
-import { CLICommand } from "./commands/command.js";
+import { CLICommand, State } from "./state.js";
 // npm run dev | tee repl.log
 
 export function getCommands(): Record<string, CLICommand> {
@@ -32,12 +32,8 @@ export function cleanInput(input: string): string[] {
   return cleanArr;
 }
 
-export function startREPL() {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
-    prompt: "Pokedex > "
-  });
+export function startREPL(state: State) {
+  const rl = state.rl
 
   rl.prompt()
   rl.on("line", (line) => {
@@ -49,15 +45,13 @@ export function startREPL() {
     }
     // console.log(`Your command was: ${inputClean[0]}`)
 
-    const commands = getCommands();
+    const commands = state.commands;
 
     switch(inputClean[0]) {
       case "exit":
-        const exit = commands["exit"].callback;
-        exit(commands);
+        commandExit(state);
       case "help":
-        const help = commands["help"].callback;
-        help(commands);
+        commandHelp(state);
         break;
       default:
         console.log("Unknown command");
