@@ -47,17 +47,17 @@ export async function startREPL(state: State) {
     try {
       // lookup the command
       const command = commands[inputClean[0]];
-
+console.log(command)
       // if command doesn't exist log unknow command
       // else call the command
       if (!command) {
         console.log("Unknown command");
       } else {
-        const call = commands[inputClean[0]].callback(state);
+        const call = command.callback(state);
         await call;
       }
     } catch (err) {
-      console.log("Unknown command");
+      console.log("Error", err);
     }
     // gives back the prompt to user
     rl.prompt();

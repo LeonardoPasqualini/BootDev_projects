@@ -8,7 +8,7 @@ export async function commandMap(state: State) {
   state.nexLocationURL = response.next;
   state.prevLocationURL = response.previous;
 
-  response.results.map((location) => {
+  response.locations.map((location) => {
     console.log(location.name)
   });
 
@@ -26,7 +26,7 @@ export async function commandMapB(state: State) {
   state.nexLocationURL = response.next;
   state.prevLocationURL = response.previous;
 
-  response.results.map((location) => {
+  response.locations.map((location) => {
     console.log(location.name)
   });
 
