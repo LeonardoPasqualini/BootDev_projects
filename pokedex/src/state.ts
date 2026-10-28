@@ -3,19 +3,20 @@ import { commandExit } from "./commands/exit.js";
 import { commandHelp } from "./commands/help.js";
 import { commandMap, commandMapB } from "./commands/commandMap.js";
 import { PokeAPI } from "./pokeapi.js";
+import { commandExplore } from "./commands/commandExplore.js";
 
 export type State = {
   rl: Interface;
   commands: Record<string, CLICommand>;
   pokeAPI: PokeAPI;
-  nexLocationURL: string | undefined;
-  prevLocationURL: string | undefined;
+  nexLocationURL: string | null;
+  prevLocationURL: string | null;
 }
 
 export type CLICommand = {
   name: string;
   description: string;
-  callback: (state: State) => Promise<void>;
+  callback: (state: State, ...args: string[]) => Promise<void>;
 };
 
 export function initState(): State {
@@ -46,6 +47,11 @@ export function initState(): State {
       name: "mapb",
       description: "Display previous names of 20 location areas in the Pokemon world. Each subsequent call to the mapb command will display the previous 20 locations.",
       callback: commandMapB,
+    },
+    explore: {
+      name: "explore",
+      description: "Display the pokemons found in the given area.",
+      callback: commandExplore,
     }
   };
 
@@ -55,7 +61,7 @@ export function initState(): State {
     rl,
     commands,
     pokeAPI,
-    nexLocationURL: undefined,
-    prevLocationURL: undefined,
+    nexLocationURL: null,
+    prevLocationURL: null,
   };
 }

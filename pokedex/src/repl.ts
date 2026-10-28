@@ -1,23 +1,5 @@
-// import { commandExit } from "./commands/exit.js";
-// import { commandHelp } from "./commands/help.js";
 import { CLICommand, State } from "./state.js";
 // npm run dev | tee repl.log
-
-// export function getCommands(): Record<string, CLICommand> {
-//   return {
-//     exit: {
-//       name: "exit",
-//       description: "Exit the Pokedex",
-//       callback: commandExit,
-//     },
-//     help: {
-//       name: "help",
-//       description: "Displays available commands",
-//       callback: commandHelp,
-//     },
-//     // can add more commands here
-//   };
-// }
 
 export function cleanInput(input: string): string[] {
   const splitArray = input.trim().split(" ");
@@ -47,13 +29,13 @@ export async function startREPL(state: State) {
     try {
       // lookup the command
       const command = commands[inputClean[0]];
-console.log(command)
+
       // if command doesn't exist log unknow command
       // else call the command
       if (!command) {
         console.log("Unknown command");
       } else {
-        const call = command.callback(state);
+        const call = command.callback(state, ...inputClean.slice(1));
         await call;
       }
     } catch (err) {
