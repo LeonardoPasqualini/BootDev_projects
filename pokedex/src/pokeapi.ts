@@ -27,7 +27,7 @@ export class PokeAPI {
       if (response.ok) {
         locations = await response.json()
         this.cache.add(locationAreaURL, locations);
-      }else {
+      } else {
         throw new Error(`Fetching locattions Response failed: ${response.status} - ${response.statusText}`);
       }
 
@@ -56,7 +56,7 @@ export class PokeAPI {
       if (response.ok) {
         locationsArea = await response.json()
         this.cache.add(locationNameURL, locationsArea);
-      }else {
+      } else {
         throw new Error(`Fetching location Response failed: ${response.status} - ${response.statusText}`);
       }
     } catch (err) {
@@ -66,6 +66,35 @@ export class PokeAPI {
     return locationsArea;
 
   }
+
+  async fetchPokemon(pokemonName: string): Promise<Pokemon> {
+    const pokemonNameURL = `${PokeAPI.baseURL}/pokemon/${pokemonName}`;
+
+    // lookup for cached url
+    if (this.cache.get(pokemonNameURL)) {
+      return this.cache.get(pokemonNameURL) as Pokemon
+    }
+
+    let pokemon;
+    try {
+      const response = await fetch(pokemonNameURL, {
+        method: "GET",
+        mode: "cors"
+      });
+      if (response.ok) {
+        pokemon = await response.json()
+        this.cache.add(pokemonNameURL, pokemon);
+      } else {
+        throw new Error(`Fetching pokemon Response failed: ${response.status} - ${response.statusText}`);
+      }
+    } catch (err) {
+      throw new Error((err as Error).message);
+    }
+
+    return pokemon;
+
+  }
+
 }
 
 export type ShallowLocations = {
@@ -84,10 +113,36 @@ export type LocationArea = {
 }
 
 export type Encounter = {
-  pokemon: Pokemon
+  pokemon: AreaPokemon
+}
+
+export type AreaPokemon = {
+  name: string
+  url: string
 }
 
 export type Pokemon = {
   name: string
-  url: string
+  base_experience: number
+  height: number
+  weight: number
+  stats: Stat[]
+  types: Type[]
+}
+
+export type Stat = {
+  base_stat: number
+  stat: StatDetail
+}
+
+export type StatDetail = {
+  name: string
+}
+
+export type Type = {
+  type: TypeDetail
+}
+
+export type TypeDetail = {
+  name: string
 }
