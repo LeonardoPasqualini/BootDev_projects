@@ -6,6 +6,7 @@ import { PokeAPI, Pokemon } from "./pokeapi.js";
 import { commandExplore } from "./commands/explore.js";
 import { commandCatch } from "./commands/catch.js";
 import { commandInspect } from "./commands/inspect.js";
+import { commandPokedex } from "./commands/pokedex.js";
 
 export type State = {
   rl: Interface;
@@ -65,7 +66,13 @@ export function initState(): State {
       name: "inspect <pokemon>",
       description: "Inspect the details of a pokemon you caught.",
       callback: commandInspect,
-    }
+    },
+    pokedex: {
+      name: "pokedex",
+      description: "List your pokemons.",
+      callback: commandPokedex,
+    },
+
   };
 
   const pokeAPI = new PokeAPI();
